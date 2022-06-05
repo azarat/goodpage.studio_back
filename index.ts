@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import request from 'request';
 import cors from 'cors';
+import https from 'https';
+import fs from 'fs';
 
 dotenv.config();
 
@@ -18,6 +20,10 @@ app.use(bodyParser.json());
 // app.get('/', (req: Request, res: Response) => {
 //   res.status(200).send(botKey);
 // });
+
+app.get('/tg/send', (req: Request, res: Response) => {
+  res.status(200).json({version: 1});
+});
 
 app.post('/tg/send', (req: Request, res: Response) => {
   let msg = "Заявка с сайта: Базовая\r\n";
@@ -42,4 +48,18 @@ app.post('/tg/send', (req: Request, res: Response) => {
   });
 });
 
-app.listen(port, () => console.log(`Hello world app listening on port ${port}!`));
+https
+  .createServer(
+		// Provide the private and public key to the server by reading each
+		// file's content with the readFileSync() method.
+    {
+      key: fs.readFileSync("privatekey.pem"),
+      cert: fs.readFileSync("public.crt"),
+    },
+    app
+  )
+  .listen(port, () => {
+    console.log(`Hello world app listening on port ${port}!`);
+  });
+
+// app.listen(port, () => console.log(`Hello world app listening on port ${port}!`));

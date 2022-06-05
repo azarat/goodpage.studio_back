@@ -8,6 +8,8 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const request_1 = __importDefault(require("request"));
 const cors_1 = __importDefault(require("cors"));
+const https_1 = __importDefault(require("https"));
+const fs_1 = __importDefault(require("fs"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT;
@@ -18,6 +20,9 @@ app.use(body_parser_1.default.json());
 // app.get('/', (req: Request, res: Response) => {
 //   res.status(200).send(botKey);
 // });
+app.get('/tg/send', (req, res) => {
+    res.status(200).json({ version: 1 });
+});
 app.post('/tg/send', (req, res) => {
     let msg = "Заявка с сайта: Базовая\r\n";
     msg += "Имя: " + req.body.f_name + "\r\n";
@@ -38,4 +43,15 @@ app.post('/tg/send', (req, res) => {
         return;
     });
 });
-app.listen(port, () => console.log(`Hello world app listening on port ${port}!`));
+https_1.default
+    .createServer(
+// Provide the private and public key to the server by reading each
+// file's content with the readFileSync() method.
+{
+    key: fs_1.default.readFileSync("privatekey.pem"),
+    cert: fs_1.default.readFileSync("public.crt"),
+}, app)
+    .listen(port, () => {
+    console.log(`Hello world app listening on port ${port}!`);
+});
+// app.listen(port, () => console.log(`Hello world app listening on port ${port}!`));
