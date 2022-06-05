@@ -1,16 +1,13 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
-// import cors from 'cors';
 
+// https://api.telegram.org/bot5439034378:AAEKuBm8GI31k2kNM5uyW3KDyyGLVTtKlN0/sendMessage?chat_id=@goodpage2022&text=sdfsd
 dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT;
 
-// app.use(cors());
-
-// Configuring body parser middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
