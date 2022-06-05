@@ -1,33 +1,45 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
+import request from 'request';
+import cors from 'cors';
 
-// https://api.telegram.org/bot5439034378:AAEKuBm8GI31k2kNM5uyW3KDyyGLVTtKlN0/sendMessage?chat_id=@goodpage2022&text=sdfsd
 dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT;
+const botKey = process.env.botKey;
+
+app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.get('/', (req: Request, res: Response) => {
-  let books = [
-    {
-      id: 1,
-      name: 'asd'
-    },
-    {
-      id: 2,
-      name: 'asd2'
+// app.get('/', (req: Request, res: Response) => {
+//   res.status(200).send(botKey);
+// });
+
+app.post('/tg/send', (req: Request, res: Response) => {
+  let msg = "Заявка с сайта: Базовая\r\n";
+  msg += "Имя: " + req.body.f_name + "\r\n";
+  msg += "Email: " + req.body.email + "\r\n";
+
+  const options = {
+    uri: 'https://api.telegram.org/bot' + process.env.botKey + '/sendMessage',
+    body: JSON.stringify({
+      chat_id: '@goodpage2022',
+      text: msg
+    }),
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
     }
-  ];
-  res.status(200).json(books);
-  // res.send('Express + TypeScript Server');
+  }
+
+  request(options, function (error, response) {
+    res.status(200).json(response.body);
+    return;
+  });
 });
 
 app.listen(port, () => console.log(`Hello world app listening on port ${port}!`));
-
-// app.listen(port, () => {
-//   console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
-// });
